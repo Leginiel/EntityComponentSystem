@@ -1,0 +1,10 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs/EntityComponentSystem/v16
+/.vs/EntityComponentSystem/DesignTimeBuild
+/EntityComponentSystem/bin/Debug
+/EntityComponentSystem/obj
+/EntityComponentSystem.Tests/bin/Debug/netcoreapp3.1
+/EntityComponentSystem.Tests/obj
