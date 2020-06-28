@@ -1,32 +1,25 @@
-﻿using EntityComponentSystem.Components;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace EntityComponentSystem.Storages
 {
   internal class StorageViewBuilder
   {
-    public static Func<IStorageManager, IEnumerable<ValueTuple<T>>> CreateNewStorageView<T>()
-      where T : class, IComponent, new()
-    {
-      Type[] neededTypes = new Type[] { typeof(T) };
-      string methodName = nameof(Storage<T>.GetEntry);
+    private const string GetEntryMethodName = "GetEntry";
 
-      return ConstructStorageView<ValueTuple<T>>(neededTypes, methodName);
-    }
-    public static Func<IStorageManager, IEnumerable<ValueTuple<T, U>>> CreateNewStorageView<T, U>()
-      where T : class, IComponent, new()
-      where U : class, IComponent, new()
+    public static Func<IStorageManager, IEnumerable<T>> CreateNewStorageView<T>()
+      where T : ITuple
     {
-      Type[] neededTypes = new Type[] { typeof(T), typeof(U) };
-      string methodName = nameof(Storage<T>.GetEntry);
+      Type tupleType = typeof(T);
+      Type[] neededTypes = tupleType.GetGenericArguments();
 
-      return ConstructStorageView<ValueTuple<T, U>>(neededTypes, methodName);
+      return ConstructStorageView<T>(neededTypes);
     }
 
-    private static Func<IStorageManager, IEnumerable<T>> ConstructStorageView<T>(Type[] neededTypes, string methodName)
+    private static Func<IStorageManager, IEnumerable<T>> ConstructStorageView<T>(Type[] neededTypes)
     {
       ParameterExpression result = Expression.Parameter(typeof(List<T>), "result");
       ParameterExpression i = Expression.Parameter(typeof(int), "i");
@@ -50,7 +43,7 @@ namespace EntityComponentSystem.Storages
             Expression.AddAssign(i, Expression.Constant(1)),
             Expression.IfThenElse(
               Expression.LessThan(i, dataLength),
-              CreateCheckIndexExpression<T>(i, neededTypes, methodName, storageManager, nextIndexLabel, result),
+              CreateCheckIndexExpression<T>(i, neededTypes, storageManager, nextIndexLabel, result),
               Expression.Break(endLabel, result)
             )
           ),
@@ -66,7 +59,6 @@ namespace EntityComponentSystem.Storages
 
     private static Expression CreateCheckIndexExpression<T>(ParameterExpression i,
                                                             Type[] neededTypes,
-                                                            string methodName,
                                                             ParameterExpression storageManager,
                                                             LabelTarget nextIndexLabel,
                                                             ParameterExpression resultList)
@@ -82,7 +74,7 @@ namespace EntityComponentSystem.Storages
         ParameterExpression parameter = Expression.Parameter(t);
 
         parameters.Add(parameter);
-        expressions.Add(Expression.Assign(parameter, GetEntryExpression(methodName, i, storageManager, getStorageMethodName, t)));
+        expressions.Add(Expression.Assign(parameter, GetEntryExpression(i, storageManager, getStorageMethodName, t)));
         expressions.Add(Expression.IfThen(
                           Expression.Equal(parameter, Expression.Constant(null, t)),
                           Expression.Break(nextIndexLabel)
@@ -100,14 +92,13 @@ namespace EntityComponentSystem.Storages
              );
     }
 
-    private static Expression GetEntryExpression(string methodName,
-                                                 ParameterExpression indexParameter,
+    private static Expression GetEntryExpression(ParameterExpression indexParameter,
                                                  ParameterExpression storageManagerParameter,
                                                  string getStorageMethodName,
                                                  Type type)
     {
       Expression valueExpression = Expression.Call(storageManagerParameter, getStorageMethodName, new Type[] { type });
-      return Expression.Call(valueExpression, methodName, null, indexParameter);
+      return Expression.Call(valueExpression, GetEntryMethodName, null, indexParameter);
     }
 
   }

@@ -22,7 +22,7 @@ namespace EntityComponentSystem.Tests.Storages
       storageManagerMock.Setup(sm => sm.DataLength).Returns(5);
       storageMock.Setup(s => s.GetEntry(It.IsIn(0, 1, 2, 3))).Returns(component);
 
-      Func<IStorageManager, IEnumerable<ValueTuple<UnitTestComponent>>> storageView = StorageViewBuilder.CreateNewStorageView<UnitTestComponent>();
+      Func<IStorageManager, IEnumerable<ValueTuple<UnitTestComponent>>> storageView = StorageViewBuilder.CreateNewStorageView<ValueTuple<UnitTestComponent>>();
       foreach (ValueTuple<UnitTestComponent> result in storageView(storageManagerMock.Object))
       {
         resultingComponents.Add(result.Item1);
@@ -54,7 +54,7 @@ namespace EntityComponentSystem.Tests.Storages
       storageMock.Setup(s => s.GetEntry(It.IsIn(0, 1, 4))).Returns(component);
       storage2Mock.Setup(s => s.GetEntry(It.IsIn(1, 2, 3))).Returns(component2);
 
-      Func<IStorageManager, IEnumerable<ValueTuple<UnitTestComponent, UnitTestComponent2>>> storageView = StorageViewBuilder.CreateNewStorageView<UnitTestComponent, UnitTestComponent2>();
+      Func<IStorageManager, IEnumerable<ValueTuple<UnitTestComponent, UnitTestComponent2>>> storageView = StorageViewBuilder.CreateNewStorageView<ValueTuple<UnitTestComponent, UnitTestComponent2>>();
       foreach (ValueTuple<UnitTestComponent, UnitTestComponent2> result in storageView(storageManagerMock.Object))
       {
         resultingComponents.Add(result);
@@ -84,7 +84,7 @@ namespace EntityComponentSystem.Tests.Storages
       storageMock.Setup(s => s.GetEntry(It.IsIn(0, 1, 4))).Returns(component);
       storage2Mock.Setup(s => s.GetEntry(It.IsIn(2, 3))).Returns(component2);
 
-      Func<IStorageManager, IEnumerable<ValueTuple<UnitTestComponent, UnitTestComponent2>>> storageView = StorageViewBuilder.CreateNewStorageView<UnitTestComponent, UnitTestComponent2>();
+      Func<IStorageManager, IEnumerable<ValueTuple<UnitTestComponent, UnitTestComponent2>>> storageView = StorageViewBuilder.CreateNewStorageView<ValueTuple<UnitTestComponent, UnitTestComponent2>>();
       foreach (ValueTuple<UnitTestComponent, UnitTestComponent2> result in storageView(storageManagerMock.Object))
       {
         resultingComponents.Add(result);
