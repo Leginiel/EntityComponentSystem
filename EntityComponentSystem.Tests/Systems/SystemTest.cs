@@ -1,4 +1,5 @@
-﻿using EntityComponentSystem.Storages;
+﻿using EntityComponentSystem.Components;
+using EntityComponentSystem.Storages;
 using EntityComponentSystem.Systems;
 using EntityComponentSystem.Tests.Components;
 using Moq;
@@ -13,7 +14,7 @@ namespace EntityComponentSystem.Tests.Systems
     public void TestSetup_NoParameter_SuccessfulSetup()
     {
       Mock<IStorageManager> storageManagerMock = new Mock<IStorageManager>();
-      Mock<System<ValueTuple<UnitTestComponent>>> systemMock = new Mock<System<ValueTuple<UnitTestComponent>>>(storageManagerMock.Object)
+      Mock<System<ValueTuple<UnitTestComponent>>> systemMock = new Mock<System<ValueTuple<UnitTestComponent>>>(storageManagerMock.Object, Is.AllOf<ValueTuple<UnitTestComponent>>())
       {
         CallBase = true
       };
@@ -24,7 +25,7 @@ namespace EntityComponentSystem.Tests.Systems
     public void TestTearDown_NoParameter_SuccessfulTearDown()
     {
       Mock<IStorageManager> storageManagerMock = new Mock<IStorageManager>();
-      Mock<System<ValueTuple<UnitTestComponent>>> systemMock = new Mock<System<ValueTuple<UnitTestComponent>>>(storageManagerMock.Object)
+      Mock<System<ValueTuple<UnitTestComponent>>> systemMock = new Mock<System<ValueTuple<UnitTestComponent>>>(storageManagerMock.Object, Is.AllOf<ValueTuple<UnitTestComponent>>())
       {
         CallBase = true
       };
