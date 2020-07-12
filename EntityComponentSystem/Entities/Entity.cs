@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 namespace EntityComponentSystem.Entities
 {
+  [Serializable]
   internal sealed class Entity : IEntity
   {
     private readonly Dictionary<Type, IComponent> components = new Dictionary<Type, IComponent>();
