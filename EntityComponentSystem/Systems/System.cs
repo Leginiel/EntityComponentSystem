@@ -21,7 +21,7 @@ namespace EntityComponentSystem.Systems
       this.storageViewFilter = storageViewFilter;
     }
 
-    public abstract void Execute();
+    public abstract void Execute(double deltaTime);
     public virtual void Setup()
     {
       StorageView = StorageViewBuilder.CreateNewStorageView(storageViewFilter);
