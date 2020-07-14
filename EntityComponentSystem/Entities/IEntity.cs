@@ -10,6 +10,8 @@ namespace EntityComponentSystem.Entities
 
     void AddComponent<ComponentType>()
       where ComponentType : class, IComponent, new();
+    ComponentType GetComponent<ComponentType>()
+      where ComponentType : class, IComponent, new();
     void RemoveComponent<ComponentType>()
       where ComponentType : class, IComponent, new();
   }

@@ -7,7 +7,6 @@ namespace EntityComponentSystem.Components
   internal class ComponentEventArgs : EventArgs
   {
     public IComponent Component { get; protected set; }
-
     public ComponentEventArgs(IComponent component)
     {
       Component = component;
