@@ -10,13 +10,13 @@ namespace EntityComponentSystem.Tests.Storages
     [Fact]
     public void TestGetStorage_NoParameter_ValidStorage()
     {
-      Mock<IStorage<UnitTestComponent>> storageMock = new Mock<IStorage<UnitTestComponent>>();
+      Mock<IStorage> storageMock = new Mock<IStorage>();
       Mock<IStorageFactory> storageFactoryMock = new Mock<IStorageFactory>();
       IStorageManager storageManager = new StorageManager(storageFactoryMock.Object);
 
       storageFactoryMock.Setup(sm => sm.CreateStorage<UnitTestComponent>()).Returns(storageMock.Object);
 
-      IStorage<UnitTestComponent> result = storageManager.GetStorage<UnitTestComponent>();
+      IStorage result = storageManager.GetStorage<UnitTestComponent>();
 
       Assert.True(storageManager.Contains<UnitTestComponent>());
       Assert.Equal(storageMock.Object, result);
@@ -24,8 +24,8 @@ namespace EntityComponentSystem.Tests.Storages
     [Fact]
     public void TestGetStorage_NewStorageAfterDataExisitngAlready_Null()
     {
-      Mock<IStorage<UnitTestComponent>> storageMock = new Mock<IStorage<UnitTestComponent>>();
-      Mock<IStorage<UnitTestComponent2>> storageMock2 = new Mock<IStorage<UnitTestComponent2>>();
+      Mock<IStorage> storageMock = new Mock<IStorage>();
+      Mock<IStorage> storageMock2 = new Mock<IStorage>();
       Mock<IStorageFactory> storageFactoryMock = new Mock<IStorageFactory>();
       IStorageManager storageManager = new StorageManager(storageFactoryMock.Object);
 
@@ -35,7 +35,7 @@ namespace EntityComponentSystem.Tests.Storages
       storageManager.AddDataEntry();
       storageManager.AddDataEntry();
 
-      IStorage<UnitTestComponent2> result = storageManager.GetStorage<UnitTestComponent2>();
+      IStorage result = storageManager.GetStorage<UnitTestComponent2>();
 
       storageMock2.Verify(s => s.AddEntry(), Times.Exactly(2));
 
@@ -46,7 +46,7 @@ namespace EntityComponentSystem.Tests.Storages
     [Fact]
     public void AddDataEntry_NoParameter_DataEntryAdded()
     {
-      Mock<IStorage<UnitTestComponent>> storageMock = new Mock<IStorage<UnitTestComponent>>();
+      Mock<IStorage> storageMock = new Mock<IStorage>();
       Mock<IStorageFactory> storageFactoryMock = new Mock<IStorageFactory>();
       IStorageManager storageManager = new StorageManager(storageFactoryMock.Object);
 
@@ -61,8 +61,8 @@ namespace EntityComponentSystem.Tests.Storages
     [Fact]
     public void AddDataEntry_NoParameterMultipleStorages_DataEntryAdded()
     {
-      Mock<IStorage<UnitTestComponent>> storageMock = new Mock<IStorage<UnitTestComponent>>();
-      Mock<IStorage<UnitTestComponent2>> storageMock2 = new Mock<IStorage<UnitTestComponent2>>();
+      Mock<IStorage> storageMock = new Mock<IStorage>();
+      Mock<IStorage> storageMock2 = new Mock<IStorage>();
       Mock<IStorageFactory> storageFactoryMock = new Mock<IStorageFactory>();
       IStorageManager storageManager = new StorageManager(storageFactoryMock.Object);
 

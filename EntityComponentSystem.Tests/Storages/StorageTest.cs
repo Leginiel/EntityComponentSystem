@@ -10,7 +10,7 @@ namespace EntityComponentSystem.Tests.Storages
     [Fact]
     public void AddEntry_NoParameter_Successful()
     {
-      IStorage<UnitTestComponent> storage = new Storage<UnitTestComponent>();
+      IStorage storage = new Storage<UnitTestComponent>();
 
       var e = Assert.Raises<StorageEntryEventArgs>(handler => storage.EntryAdded += handler,
                                                    handler => storage.EntryAdded -= handler,
@@ -23,7 +23,7 @@ namespace EntityComponentSystem.Tests.Storages
     [Fact]
     public void ChangeEntry_ValidIndexValidComponent_Successful()
     {
-      IStorage<UnitTestComponent> storage = new Storage<UnitTestComponent>();
+      IStorage storage = new Storage<UnitTestComponent>();
       UnitTestComponent component = new UnitTestComponent();
 
       storage.AddEntry();
@@ -34,12 +34,12 @@ namespace EntityComponentSystem.Tests.Storages
       Assert.Equal(0, e.Arguments.Index);
       Assert.Null(e.Arguments.Value);
       Assert.Equal(component, e.Arguments.NewValue);
-      Assert.Equal(component, storage.GetEntry(0));
+      Assert.Equal(component, storage.GetEntry<UnitTestComponent>(0));
     }
     [Fact]
     public void ChangeEntry_InvalidIndexValidComponent_IndexOutOfRangeException()
     {
-      IStorage<UnitTestComponent> storage = new Storage<UnitTestComponent>();
+      IStorage storage = new Storage<UnitTestComponent>();
       UnitTestComponent component = new UnitTestComponent();
 
       Assert.Throws<IndexOutOfRangeException>(() => storage.ChangeEntry(0, component));
@@ -47,7 +47,7 @@ namespace EntityComponentSystem.Tests.Storages
     [Fact]
     public void ChangeEntry_ValidIndexNull_Successful()
     {
-      IStorage<UnitTestComponent> storage = new Storage<UnitTestComponent>();
+      IStorage storage = new Storage<UnitTestComponent>();
       UnitTestComponent component = new UnitTestComponent();
 
       storage.AddEntry();
@@ -55,16 +55,16 @@ namespace EntityComponentSystem.Tests.Storages
 
       var e = Assert.Raises<StorageEntryChangedEventArgs>(handler => storage.EntryChanged += handler,
                                                           handler => storage.EntryChanged -= handler,
-                                                          () => storage.ChangeEntry(0, null));
+                                                          () => storage.ChangeEntry<UnitTestComponent>(0, null));
       Assert.Equal(0, e.Arguments.Index);
       Assert.Null(e.Arguments.NewValue);
       Assert.Equal(component, e.Arguments.Value);
-      Assert.Null(storage.GetEntry(0));
+      Assert.Null(storage.GetEntry<UnitTestComponent>(0));
     }
     [Fact]
     public void RemoveEntry_ValidIndexNonExistingComponent_Successful()
     {
-      IStorage<UnitTestComponent> storage = new Storage<UnitTestComponent>();
+      IStorage storage = new Storage<UnitTestComponent>();
 
       storage.AddEntry();
 
@@ -77,7 +77,7 @@ namespace EntityComponentSystem.Tests.Storages
     [Fact]
     public void RemoveEntry_ValidIndexExistingComponent_Successful()
     {
-      IStorage<UnitTestComponent> storage = new Storage<UnitTestComponent>();
+      IStorage storage = new Storage<UnitTestComponent>();
       UnitTestComponent component = new UnitTestComponent();
 
       storage.AddEntry();
@@ -91,7 +91,7 @@ namespace EntityComponentSystem.Tests.Storages
     [Fact]
     public void RemoveEntry_InvalidIndex_IndexOutOfRangeException()
     {
-      IStorage<UnitTestComponent> storage = new Storage<UnitTestComponent>();
+      IStorage storage = new Storage<UnitTestComponent>();
 
       Assert.Throws<IndexOutOfRangeException>(() => storage.RemoveEntry(0));
     }
@@ -99,32 +99,32 @@ namespace EntityComponentSystem.Tests.Storages
     [Fact]
     public void GetEntry_ValidIndexNonExistingComponent_Null()
     {
-      IStorage<UnitTestComponent> storage = new Storage<UnitTestComponent>();
+      IStorage storage = new Storage<UnitTestComponent>();
 
       storage.AddEntry();
-      Assert.Null(storage.GetEntry(0));
+      Assert.Null(storage.GetEntry<UnitTestComponent>(0));
     }
     [Fact]
     public void GetEntry_ValidIndexExistingComponent_ComponentData()
     {
-      IStorage<UnitTestComponent> storage = new Storage<UnitTestComponent>();
+      IStorage storage = new Storage<UnitTestComponent>();
       UnitTestComponent component = new UnitTestComponent();
 
       storage.AddEntry();
       storage.ChangeEntry(0, component);
-      Assert.Equal(component, storage.GetEntry(0));
+      Assert.Equal(component, storage.GetEntry<UnitTestComponent>(0));
     }
     [Fact]
     public void GetEntry_InvalidIndex_IndexOutOfRangeException()
     {
-      IStorage<UnitTestComponent> storage = new Storage<UnitTestComponent>();
+      IStorage storage = new Storage<UnitTestComponent>();
 
-      Assert.Throws<IndexOutOfRangeException>(() => storage.GetEntry(0));
+      Assert.Throws<IndexOutOfRangeException>(() => storage.GetEntry<UnitTestComponent>(0));
     }
     [Fact]
     public void IsComponentAvailable_ValidIndexNoComponent_False()
     {
-      IStorage<UnitTestComponent> storage = new Storage<UnitTestComponent>();
+      IStorage storage = new Storage<UnitTestComponent>();
 
       storage.AddEntry();
 
@@ -133,7 +133,7 @@ namespace EntityComponentSystem.Tests.Storages
     [Fact]
     public void IsComponentAvailable_ValidIndexComponent_True()
     {
-      IStorage<UnitTestComponent> storage = new Storage<UnitTestComponent>();
+      IStorage storage = new Storage<UnitTestComponent>();
       UnitTestComponent component = new UnitTestComponent();
 
       storage.AddEntry();
@@ -144,7 +144,7 @@ namespace EntityComponentSystem.Tests.Storages
     [Fact]
     public void IsAvailable_InvalidIndex_IndexOutOfRangeException()
     {
-      IStorage<UnitTestComponent> storage = new Storage<UnitTestComponent>();
+      IStorage storage = new Storage<UnitTestComponent>();
 
       Assert.Throws<IndexOutOfRangeException>(() => storage.IsComponentAvailable(0));
     }

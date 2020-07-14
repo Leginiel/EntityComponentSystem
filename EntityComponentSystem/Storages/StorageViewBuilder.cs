@@ -1,6 +1,7 @@
 ﻿using EntityComponentSystem.Components;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -100,8 +101,9 @@ namespace EntityComponentSystem.Storages
                                                  string getStorageMethodName,
                                                  Type type)
     {
-      Expression valueExpression = Expression.Call(storageManagerParameter, getStorageMethodName, new Type[] { type });
-      return Expression.Call(valueExpression, GetEntryMethodName, null, indexParameter);
+      Type[] genericArguments = new Type[] { type };
+      Expression valueExpression = Expression.Call(storageManagerParameter, getStorageMethodName, genericArguments);
+      return Expression.Call(valueExpression, nameof(IStorage.GetEntry), genericArguments, indexParameter);
     }
 
   }

@@ -11,7 +11,7 @@ namespace EntityComponentSystem.Tests.Storage
     {
       IStorageFactory storageFactory = new StorageFactory();
 
-      IStorage<UnitTestComponent> result = storageFactory.CreateStorage<UnitTestComponent>();
+      IStorage result = storageFactory.CreateStorage<UnitTestComponent>();
 
       Assert.NotNull(result);
     }

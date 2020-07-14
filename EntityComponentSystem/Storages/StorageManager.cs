@@ -24,33 +24,30 @@ namespace EntityComponentSystem.Storages
       }
       DataLength++;
     }
-
     public bool Contains<T>()
       where T : class, IComponent, new()
     {
       return storages.ContainsKey(typeof(T));
     }
-
-    public IStorage<T> GetStorage<T>()
+    public IStorage GetStorage<T>()
       where T : class, IComponent, new()
     {
       Type storageType = typeof(T);
-      IStorage<T> result;
+      IStorage result;
 
       if (storages.TryGetValue(storageType, out IStorage storage))
       {
-        result = (IStorage<T>)storage;
+        result = storage;
       }
       else
       {
         result = factory.CreateStorage<T>();
         storages.Add(storageType, result);
-        AddDataEntriesToNewStorage(result);
+        AddDataEntriesToNewStorage<T>(result);
       }
       return result;
     }
-
-    private void AddDataEntriesToNewStorage<T>(IStorage<T> result)
+    private void AddDataEntriesToNewStorage<T>(IStorage result)
       where T : class, IComponent, new()
     {
       for (int i = 0; i < DataLength; i++)
