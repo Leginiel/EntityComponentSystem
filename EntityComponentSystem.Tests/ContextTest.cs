@@ -17,7 +17,8 @@ namespace EntityComponentSystem.Tests
       Mock<ISystem> systemMock = new Mock<ISystem>();
       Mock<ICacheManager> cacheManagerMock = new Mock<ICacheManager>();
       Mock<IStorageManager> storageManagerMock = new Mock<IStorageManager>();
-      IContext context = new Context(cacheManagerMock.Object, storageManagerMock.Object);
+      Mock<IExecutor> executorMock = new Mock<IExecutor>();
+      IContext context = new Context(cacheManagerMock.Object, storageManagerMock.Object, executorMock.Object);
 
       context.RegisterSystem<ValueTuple<UnitTestComponent>>(systemMock.Object);
 
@@ -28,7 +29,8 @@ namespace EntityComponentSystem.Tests
     {
       Mock<ICacheManager> cacheManagerMock = new Mock<ICacheManager>();
       Mock<IStorageManager> storageManagerMock = new Mock<IStorageManager>();
-      IContext context = new Context(cacheManagerMock.Object, storageManagerMock.Object);
+      Mock<IExecutor> executorMock = new Mock<IExecutor>();
+      IContext context = new Context(cacheManagerMock.Object, storageManagerMock.Object, executorMock.Object);
 
       Assert.Throws<ArgumentNullException>(() => context.RegisterSystem<ValueTuple<UnitTestComponent>>(null));
     }
@@ -38,7 +40,8 @@ namespace EntityComponentSystem.Tests
       Mock<ISystem> systemMock = new Mock<ISystem>();
       Mock<ICacheManager> cacheManagerMock = new Mock<ICacheManager>();
       Mock<IStorageManager> storageManagerMock = new Mock<IStorageManager>();
-      IContext context = new Context(cacheManagerMock.Object, storageManagerMock.Object);
+      Mock<IExecutor> executorMock = new Mock<IExecutor>();
+      IContext context = new Context(cacheManagerMock.Object, storageManagerMock.Object, executorMock.Object);
 
       context.RegisterSystem<ValueTuple<UnitTestComponent>>(systemMock.Object);
       Assert.Throws<ArgumentException>(() => context.RegisterSystem<ValueTuple<UnitTestComponent>>(systemMock.Object));
@@ -52,10 +55,11 @@ namespace EntityComponentSystem.Tests
       Mock<ISystem> systemMock = new Mock<ISystem>();
       Mock<ICacheManager> cacheManagerMock = new Mock<ICacheManager>();
       Mock<IStorageManager> storageManagerMock = new Mock<IStorageManager>();
-      IContext context = new Context(cacheManagerMock.Object, storageManagerMock.Object);
+      Mock<IExecutor> executorMock = new Mock<IExecutor>();
+      IContext context = new Context(cacheManagerMock.Object, storageManagerMock.Object, executorMock.Object);
 
       context.RegisterSystem<ValueTuple<UnitTestComponent>>(systemMock.Object);
-      context.UnregisterSystem<ValueTuple<UnitTestComponent>>(systemMock.Object);
+      context.UnregisterSystem(systemMock.Object);
 
       Assert.False(context.ContainsSystem<ValueTuple<UnitTestComponent>>(systemMock.Object));
     }
@@ -64,9 +68,10 @@ namespace EntityComponentSystem.Tests
     {
       Mock<ICacheManager> cacheManagerMock = new Mock<ICacheManager>();
       Mock<IStorageManager> storageManagerMock = new Mock<IStorageManager>();
-      IContext context = new Context(cacheManagerMock.Object, storageManagerMock.Object);
+      Mock<IExecutor> executorMock = new Mock<IExecutor>();
+      IContext context = new Context(cacheManagerMock.Object, storageManagerMock.Object, executorMock.Object);
 
-      Assert.Throws<ArgumentNullException>(() => context.UnregisterSystem<ValueTuple<UnitTestComponent>>(null));
+      Assert.Throws<ArgumentNullException>(() => context.UnregisterSystem(null));
     }
     [Fact]
     public void TestUnregisterSystem_ValidNonExistingSystem_ThrowsArgumentException()
@@ -74,9 +79,10 @@ namespace EntityComponentSystem.Tests
       Mock<ISystem> systemMock = new Mock<ISystem>();
       Mock<ICacheManager> cacheManagerMock = new Mock<ICacheManager>();
       Mock<IStorageManager> storageManagerMock = new Mock<IStorageManager>();
-      IContext context = new Context(cacheManagerMock.Object, storageManagerMock.Object);
+      Mock<IExecutor> executorMock = new Mock<IExecutor>();
+      IContext context = new Context(cacheManagerMock.Object, storageManagerMock.Object, executorMock.Object);
 
-      Assert.Throws<ArgumentException>(() => context.UnregisterSystem<ValueTuple<UnitTestComponent>>(systemMock.Object));
+      Assert.Throws<ArgumentException>(() => context.UnregisterSystem(systemMock.Object));
 
       Assert.False(context.ContainsSystem<ValueTuple<UnitTestComponent>>(systemMock.Object));
     }
@@ -85,7 +91,8 @@ namespace EntityComponentSystem.Tests
     {
       Mock<ICacheManager> cacheManagerMock = new Mock<ICacheManager>();
       Mock<IStorageManager> storageManagerMock = new Mock<IStorageManager>();
-      IContext context = new Context(cacheManagerMock.Object, storageManagerMock.Object);
+      Mock<IExecutor> executorMock = new Mock<IExecutor>();
+      IContext context = new Context(cacheManagerMock.Object, storageManagerMock.Object, executorMock.Object);
       Entity entity = new Entity();
 
       cacheManagerMock.Setup((cm) => cm.GetItemFromCache<Entity>()).Returns(entity);
@@ -100,7 +107,8 @@ namespace EntityComponentSystem.Tests
     {
       Mock<ICacheManager> cacheManagerMock = new Mock<ICacheManager>();
       Mock<IStorageManager> storageManagerMock = new Mock<IStorageManager>();
-      IContext context = new Context(cacheManagerMock.Object, storageManagerMock.Object);
+      Mock<IExecutor> executorMock = new Mock<IExecutor>();
+      IContext context = new Context(cacheManagerMock.Object, storageManagerMock.Object, executorMock.Object);
       UnitTestComponent component = new UnitTestComponent();
 
       cacheManagerMock.Setup((cm) => cm.GetItemFromCache<UnitTestComponent>()).Returns(component);
@@ -115,7 +123,8 @@ namespace EntityComponentSystem.Tests
     {
       Mock<ICacheManager> cacheManagerMock = new Mock<ICacheManager>();
       Mock<IStorageManager> storageManagerMock = new Mock<IStorageManager>();
-      IContext context = new Context(cacheManagerMock.Object, storageManagerMock.Object);
+      Mock<IExecutor> executorMock = new Mock<IExecutor>();
+      IContext context = new Context(cacheManagerMock.Object, storageManagerMock.Object, executorMock.Object);
 
       cacheManagerMock.Setup((cm) => cm.GetItemFromCache<Entity>()).Returns(new Entity());
 
@@ -132,7 +141,8 @@ namespace EntityComponentSystem.Tests
     {
       Mock<ICacheManager> cacheManagerMock = new Mock<ICacheManager>();
       Mock<IStorageManager> storageManagerMock = new Mock<IStorageManager>();
-      IContext context = new Context(cacheManagerMock.Object, storageManagerMock.Object);
+      Mock<IExecutor> executorMock = new Mock<IExecutor>();
+      IContext context = new Context(cacheManagerMock.Object, storageManagerMock.Object, executorMock.Object);
 
       Assert.Throws<ArgumentOutOfRangeException>(() => context.DestroyEntity(1));
     }
@@ -141,8 +151,8 @@ namespace EntityComponentSystem.Tests
     {
       Mock<ICacheManager> cacheManagerMock = new Mock<ICacheManager>();
       Mock<IStorageManager> storageManagerMock = new Mock<IStorageManager>();
-      IContext context = new Context(cacheManagerMock.Object, storageManagerMock.Object);
-
+      Mock<IExecutor> executorMock = new Mock<IExecutor>();
+      IContext context = new Context(cacheManagerMock.Object, storageManagerMock.Object, executorMock.Object);
       cacheManagerMock.Setup((cm) => cm.GetItemFromCache<Entity>()).Returns(new Entity());
       IEntity entity = context.CreateEntity();
 
@@ -157,7 +167,8 @@ namespace EntityComponentSystem.Tests
     {
       Mock<ICacheManager> cacheManagerMock = new Mock<ICacheManager>();
       Mock<IStorageManager> storageManagerMock = new Mock<IStorageManager>();
-      IContext context = new Context(cacheManagerMock.Object, storageManagerMock.Object);
+      Mock<IExecutor> executorMock = new Mock<IExecutor>();
+      IContext context = new Context(cacheManagerMock.Object, storageManagerMock.Object, executorMock.Object);
 
       Assert.Throws<ArgumentNullException>(() => context.DestroyEntity(null));
     }
@@ -166,7 +177,8 @@ namespace EntityComponentSystem.Tests
     {
       Mock<ICacheManager> cacheManagerMock = new Mock<ICacheManager>();
       Mock<IStorageManager> storageManagerMock = new Mock<IStorageManager>();
-      IContext context = new Context(cacheManagerMock.Object, storageManagerMock.Object);
+      Mock<IExecutor> executorMock = new Mock<IExecutor>();
+      IContext context = new Context(cacheManagerMock.Object, storageManagerMock.Object, executorMock.Object);
       cacheManagerMock.Setup((cm) => cm.GetItemFromCache<Entity>()).Returns(new Entity());
 
       IEntity entity = context.CreateEntity();
@@ -184,10 +196,13 @@ namespace EntityComponentSystem.Tests
     {
       Mock<ICacheManager> cacheManagerMock = new Mock<ICacheManager>();
       Mock<IStorageManager> storageManagerMock = new Mock<IStorageManager>();
-      IContext context = new Context(cacheManagerMock.Object, storageManagerMock.Object);
+      Mock<IStorage> storageMock = new Mock<IStorage>();
+      Mock<IExecutor> executorMock = new Mock<IExecutor>();
+      IContext context = new Context(cacheManagerMock.Object, storageManagerMock.Object, executorMock.Object);
       UnitTestComponent component = new UnitTestComponent();
       cacheManagerMock.Setup((cm) => cm.GetItemFromCache<Entity>()).Returns(new Entity());
       cacheManagerMock.Setup((cm) => cm.GetItemFromCache<UnitTestComponent>()).Returns(component);
+      storageManagerMock.Setup(sm => sm.GetStorage<UnitTestComponent>()).Returns(storageMock.Object);
 
       IEntity entity = context.CreateEntity();
       entity.AddComponent<UnitTestComponent>();
@@ -204,10 +219,13 @@ namespace EntityComponentSystem.Tests
     {
       Mock<ICacheManager> cacheManagerMock = new Mock<ICacheManager>();
       Mock<IStorageManager> storageManagerMock = new Mock<IStorageManager>();
-      IContext context = new Context(cacheManagerMock.Object, storageManagerMock.Object);
+      Mock<IStorage> storageMock = new Mock<IStorage>();
+      Mock<IExecutor> executorMock = new Mock<IExecutor>();
+      IContext context = new Context(cacheManagerMock.Object, storageManagerMock.Object, executorMock.Object);
       UnitTestComponent component = new UnitTestComponent();
       cacheManagerMock.Setup((cm) => cm.GetItemFromCache<Entity>()).Returns(new Entity());
       cacheManagerMock.Setup((cm) => cm.GetItemFromCache<UnitTestComponent>()).Returns(component);
+      storageManagerMock.Setup(sm => sm.GetStorage<UnitTestComponent>()).Returns(storageMock.Object);
       IEntity entity = context.CreateEntity();
       entity.AddComponent<UnitTestComponent>();
 
@@ -223,12 +241,16 @@ namespace EntityComponentSystem.Tests
     {
       Mock<ICacheManager> cacheManagerMock = new Mock<ICacheManager>();
       Mock<IStorageManager> storageManagerMock = new Mock<IStorageManager>();
-      IContext context = new Context(cacheManagerMock.Object, storageManagerMock.Object);
+      Mock<IStorage> storageMock = new Mock<IStorage>();
+      Mock<IExecutor> executorMock = new Mock<IExecutor>();
+      IContext context = new Context(cacheManagerMock.Object, storageManagerMock.Object, executorMock.Object);
       UnitTestComponent component = new UnitTestComponent();
       UnitTestComponent2 component2 = new UnitTestComponent2();
       cacheManagerMock.Setup((cm) => cm.GetItemFromCache<Entity>()).Returns(new Entity());
       cacheManagerMock.Setup((cm) => cm.GetItemFromCache<UnitTestComponent>()).Returns(component);
       cacheManagerMock.Setup((cm) => cm.GetItemFromCache<UnitTestComponent2>()).Returns(component2);
+      storageManagerMock.Setup(sm => sm.GetStorage<UnitTestComponent>()).Returns(storageMock.Object);
+      storageManagerMock.Setup(sm => sm.GetStorage<UnitTestComponent2>()).Returns(storageMock.Object);
 
       IEntity entity = context.CreateEntity();
       IEntity entity2 = context.CreateEntity();
