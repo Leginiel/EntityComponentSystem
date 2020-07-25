@@ -11,13 +11,12 @@ namespace EntityComponentSystem.Storages
 
     void AddEntry();
     void RemoveEntry(int index);
-    bool IsComponentAvailable(int index);
-  }
-  public interface IStorage<ComponentType> : IStorage
-    where ComponentType : IComponent
-  {
+    void ChangeEntry<ComponentType>(int index, ComponentType entry)
+      where ComponentType : class, IComponent, new();
 
-    ComponentType GetEntry(int index);
-    void ChangeEntry(int index, ComponentType entry);
+    ComponentType GetEntry<ComponentType>(int index)
+      where ComponentType : class, IComponent, new();
+
+    bool IsComponentAvailable(int index);
   }
 }

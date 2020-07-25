@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using EntityComponentSystem.Caching;
 using EntityComponentSystem.Storages;
+using EntityComponentSystem.Systems;
 using System.Diagnostics.CodeAnalysis;
 
 namespace EntityComponentSystem
@@ -21,6 +22,9 @@ namespace EntityComponentSystem
              .SingleInstance();
       builder.RegisterType<StorageFactory>()
              .As<IStorageFactory>()
+             .SingleInstance();
+      builder.RegisterType<Executor>()
+             .As<IExecutor>()
              .SingleInstance();
     }
   }

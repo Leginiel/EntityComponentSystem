@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace EntityComponentSystem.Storages
 {
-  internal class Storage<ComponentType> : IStorage<ComponentType>
+  internal class Storage<ComponentType> : IStorage
     where ComponentType : class, IComponent, new()
   {
     private readonly List<ComponentType> storage = new List<ComponentType>();
@@ -19,19 +19,21 @@ namespace EntityComponentSystem.Storages
       EntryAdded?.Invoke(this, new StorageEntryEventArgs(storage.Count - 1));
     }
 
-    public void ChangeEntry(int index, ComponentType entry)
+    public void ChangeEntry<Type>(int index, Type entry)
+      where Type : class, IComponent, new()
     {
       CheckBounds(index);
       IComponent oldValue = storage[index];
-      storage[index] = entry;
+      storage[index] = entry as ComponentType;
 
-      EntryChanged?.Invoke(this, new StorageEntryChangedEventArgs(index, oldValue, entry));
+      EntryChanged?.Invoke(this, new StorageEntryChangedEventArgs(index, oldValue, storage[index]));
     }
-    public ComponentType GetEntry(int index)
+    public Type GetEntry<Type>(int index)
+      where Type : class, IComponent, new()
     {
       CheckBounds(index);
 
-      return storage[index];
+      return storage[index] as Type;
     }
 
     public bool IsComponentAvailable(int index)

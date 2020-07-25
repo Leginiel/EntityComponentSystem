@@ -42,7 +42,16 @@ namespace EntityComponentSystem.Entities
       components.Add(type, args.Component);
       ComponentAdded?.Invoke(this, args);
     }
-
+    public ComponentType GetComponent<ComponentType>()
+      where ComponentType : class, IComponent, new()
+    {
+      Type type = typeof(ComponentType);
+      if (!components.TryGetValue(type, out IComponent result))
+      {
+        throw new ArgumentException($"Component with type \"{type.Name}\" doesn't exists.", nameof(ComponentType));
+      }
+      return result as ComponentType;
+    }
     public void RemoveComponent<ComponentType>()
       where ComponentType : class, IComponent, new()
     {
@@ -68,5 +77,7 @@ namespace EntityComponentSystem.Entities
 
       components.Clear();
     }
+
+
   }
 }

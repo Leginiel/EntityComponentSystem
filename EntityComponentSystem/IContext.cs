@@ -13,11 +13,12 @@ namespace EntityComponentSystem
     void DestroyAllEntities();
     void RegisterSystem<T>(ISystem system)
       where T : ITuple;
-    void UnregisterSystem<T>(ISystem system)
-      where T : ITuple;
+    void UnregisterSystem(ISystem system);
+    void UnregisterAllSystems();
     bool ContainsSystem<T>(ISystem system)
       where T : ITuple;
     T CreateComponent<T>()
       where T : class, IComponent, new();
+    void Update(double deltaTime);
   }
 }

@@ -7,7 +7,7 @@ namespace EntityComponentSystem.Storages
     int DataLength { get; }
     bool Contains<T>()
       where T : class, IComponent, new();
-    IStorage<T> GetStorage<T>()
+    IStorage GetStorage<T>()
       where T : class, IComponent, new();
     void AddDataEntry();
   }

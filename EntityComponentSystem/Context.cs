@@ -14,13 +14,14 @@ namespace EntityComponentSystem
   {
     private readonly ICacheManager cacheManager;
     private readonly IStorageManager storageManager;
+    private readonly IExecutor executor;
     private readonly List<IEntity> entities = new List<IEntity>();
-    private readonly List<ISystem> systems = new List<ISystem>();
 
-    public Context(ICacheManager cacheManager, IStorageManager storageManager)
+    public Context(ICacheManager cacheManager, IStorageManager storageManager, IExecutor executor)
     {
       this.cacheManager = cacheManager;
       this.storageManager = storageManager;
+      this.executor = executor;
     }
 
     public IEntity CreateEntity()
@@ -31,6 +32,7 @@ namespace EntityComponentSystem
       {
         entity.Initialize(entities.Count);
         entities.Add(entity);
+        storageManager.AddDataEntry();
       }
       else
       {
@@ -38,12 +40,11 @@ namespace EntityComponentSystem
       }
 
       entity.ComponentRemoved += EntityComponentRemoved;
+      entity.ComponentAdded += EntityComponentAdded;
       entity.ComponentRequested += EntityComponentRequested;
 
       return entity;
     }
-
-
 
     public T CreateComponent<T>()
       where T : class, IComponent, new()
@@ -75,7 +76,9 @@ namespace EntityComponentSystem
       }
       Entity entity = (Entity)entities[index];
       entity.Destroy();
+      entity.ComponentAdded -= EntityComponentAdded;
       entity.ComponentRemoved -= EntityComponentRemoved;
+      entity.ComponentRequested -= EntityComponentRequested;
       cacheManager.AddItemToCache(entity);
       entities[index] = null;
     }
@@ -84,37 +87,36 @@ namespace EntityComponentSystem
       where T : ITuple
     {
       CheckNull(system);
-
-      if (!systems.Contains(system))
-      {
-        systems.Add(system);
-      }
-      else
-      {
-        throw new ArgumentException("The provided system is already registered in the context.");
-      }
+      executor.RegisterSystem(system);
     }
 
-    public void UnregisterSystem<T>(ISystem system)
-      where T : ITuple
+    public void UnregisterSystem(ISystem system)
     {
       CheckNull(system);
+      system.TearDown();
+      executor.UnregisterSystem(system);
+    }
 
-      if (!systems.Remove(system))
-      {
-        throw new ArgumentException("The provided system wasn't registered in the context.");
-      }
+    public void UnregisterAllSystems()
+    {
+      executor.UnregisterAllSystems();
     }
 
     public bool ContainsSystem<T>(ISystem system)
       where T : ITuple
     {
-      return systems.Contains(system);
+      return executor.ContainsSystem(system);
+    }
+
+    public void Update(double deltaTime)
+    {
+      executor.Execute(deltaTime);
     }
 
     private void EntityComponentRemoved(object sender, ComponentEventArgs e)
     {
       cacheManager.AddItemToCache(e.Component);
+      ChangeStorageEntry((IEntity)sender, e.Component);
     }
     private void EntityComponentRequested(object sender, ComponentRequestEventArgs e)
     {
@@ -122,6 +124,23 @@ namespace EntityComponentSystem
       method = method.MakeGenericMethod(e.RequestedType);
       e.SetComponent((IComponent)method.Invoke(cacheManager, Array.Empty<object>()));
     }
+    private void EntityComponentAdded(object sender, ComponentEventArgs e)
+    {
+      ChangeStorageEntry((IEntity)sender, e.Component);
+    }
+
+    private void ChangeStorageEntry(IEntity entity, IComponent component)
+    {
+      Type type = component.GetType();
+      IStorage storage;
+      MethodInfo method = storageManager.GetType().GetMethod(nameof(storageManager.GetStorage));
+      MethodInfo storageMethod = typeof(IStorage).GetMethod(nameof(storage.ChangeEntry));
+      method = method.MakeGenericMethod(type);
+      storageMethod = storageMethod.MakeGenericMethod(type);
+      storage = (IStorage)method.Invoke(storageManager, Array.Empty<object>());
+      storageMethod.Invoke(storage, new object[] { entity.Id, component });
+    }
+
     private void CheckNull(ISystem system)
     {
       if (system == null)
