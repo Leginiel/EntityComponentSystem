@@ -3,7 +3,7 @@
   public interface ISystem
   {
     void Setup();
-    void Execute();
+    void Execute(double deltaTime);
     void TearDown();
   }
 }

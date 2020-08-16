@@ -1,13 +1,9 @@
 ﻿namespace EntityComponentSystem.Caching
 {
-  internal interface ICache
+  internal interface ICache<CacheType>
+    where CacheType : class
   {
-    int Count { get; }
-    void Add(object item);
-  }
-  internal interface ICache<CacheType> : ICache
-    where CacheType : class, new()
-  {
+    IElementFactory<CacheType> Factory { set; }
 
     void Add(CacheType item);
     CacheType GetNext();

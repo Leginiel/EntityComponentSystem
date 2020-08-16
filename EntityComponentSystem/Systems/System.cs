@@ -1,35 +1,24 @@
-﻿using EntityComponentSystem.Components;
-using EntityComponentSystem.Storages;
-using System;
+﻿using EntityComponentSystem.Core;
+using EntityComponentSystem.Entities;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 
 namespace EntityComponentSystem.Systems
 {
-  [Serializable]
-  public abstract class System<T> : ISystem
-    where T : ITuple
+  public abstract class System : ISystem
   {
-    private readonly ComponentExpression<T> storageViewFilter;
+    internal IEntityManager EntityManager { get; set; }
 
-    protected IStorageManager StorageManager { get; }
-    protected Func<IStorageManager, IEnumerable<T>> StorageView { get; private set; }
-
-    public System(IStorageManager storageManager, ComponentExpression<T> storageViewFilter)
-    {
-      StorageManager = storageManager;
-      this.storageViewFilter = storageViewFilter;
-    }
-
-    public abstract void Execute();
-    public virtual void Setup()
-    {
-      StorageView = StorageViewBuilder.CreateNewStorageView(storageViewFilter);
-    }
-
+    public abstract void Execute(double deltaTime);
+    public abstract void Setup();
     public virtual void TearDown()
     {
-      StorageView = null;
+      EntityManager = null;
+    }
+
+    protected IEnumerable<IEntity> IterateAllEntities()
+    {
+      foreach (IEntity entity in EntityManager.Iterate(It.AllActive()))
+        yield return entity;
     }
   }
 }

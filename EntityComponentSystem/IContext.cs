@@ -7,17 +7,15 @@ namespace EntityComponentSystem
 {
   public interface IContext
   {
+    bool ContainsSystem<T>(ISystem system) where T : ITuple;
+    IComponent CreateComponent<ComponentType>(ComponentType value, IEntity entity, bool isInstanced);
     IEntity CreateEntity();
-    void DestroyEntity(IEntity entity);
-    void DestroyEntity(int index);
+    void DestroyAllComponent(IEntity entity);
     void DestroyAllEntities();
-    void RegisterSystem<T>(ISystem system)
-      where T : ITuple;
-    void UnregisterSystem<T>(ISystem system)
-      where T : ITuple;
-    bool ContainsSystem<T>(ISystem system)
-      where T : ITuple;
-    T CreateComponent<T>()
-      where T : class, IComponent, new();
+    void DestroyComponent(IComponent component, IEntity entity);
+    void DestroyEntity(IEntity entity);
+    void RegisterSystem(ISystem system);
+    void UnregisterSystem(ISystem system);
+    void UnregisterAllSystems();
   }
 }

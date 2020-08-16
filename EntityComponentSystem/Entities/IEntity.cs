@@ -1,16 +1,14 @@
 ﻿using EntityComponentSystem.Components;
+using EntityComponentSystem.Core;
 using System.Collections.Generic;
 
 namespace EntityComponentSystem.Entities
 {
-  public interface IEntity
+  public interface IEntity : IActivatable
   {
-    IReadOnlyCollection<IComponent> Components { get; }
     int Id { get; }
+    IReadOnlyList<IComponent> Components { get; }
 
-    void AddComponent<ComponentType>()
-      where ComponentType : class, IComponent, new();
-    void RemoveComponent<ComponentType>()
-      where ComponentType : class, IComponent, new();
+    IComponent<ComponentType> FindComponent<ComponentType>();
   }
 }

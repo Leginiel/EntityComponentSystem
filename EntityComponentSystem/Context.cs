@@ -1,131 +1,75 @@
-﻿using EntityComponentSystem.Caching;
-using EntityComponentSystem.Components;
+﻿using EntityComponentSystem.Components;
 using EntityComponentSystem.Entities;
-using EntityComponentSystem.Storages;
 using EntityComponentSystem.Systems;
-using System;
-using System.Collections.Generic;
-using System.Reflection;
 using System.Runtime.CompilerServices;
+using EcsSystem = EntityComponentSystem.Systems.System;
 
 namespace EntityComponentSystem
 {
   public class Context : IContext
   {
-    private readonly ICacheManager cacheManager;
-    private readonly IStorageManager storageManager;
-    private readonly List<IEntity> entities = new List<IEntity>();
-    private readonly List<ISystem> systems = new List<ISystem>();
+    private readonly IEntityManager entityManager;
+    private readonly IComponentElementFactory factory;
+    private readonly IExecutor executor;
 
-    public Context(ICacheManager cacheManager, IStorageManager storageManager)
+    public Context(IEntityManager entityManager, IComponentElementFactory factory, IExecutor executor)
     {
-      this.cacheManager = cacheManager;
-      this.storageManager = storageManager;
+      this.entityManager = entityManager;
+      this.factory = factory;
+      this.executor = executor;
     }
 
     public IEntity CreateEntity()
     {
-      Entity entity = cacheManager.GetItemFromCache<Entity>();
-
-      if (entity.Id == -1)
-      {
-        entity.Initialize(entities.Count);
-        entities.Add(entity);
-      }
-      else
-      {
-        entities[entity.Id] = entity;
-      }
-
-      entity.ComponentRemoved += EntityComponentRemoved;
-      entity.ComponentRequested += EntityComponentRequested;
-
-      return entity;
+      return entityManager.CreateEntity();
     }
-
-
-
-    public T CreateComponent<T>()
-      where T : class, IComponent, new()
-    {
-      return cacheManager.GetItemFromCache<T>();
-    }
-
     public void DestroyAllEntities()
     {
-      for (int i = 0; i < entities.Count; i++)
-      {
-        DestroyEntity(i);
-      }
+      entityManager.DestroyAllEntities();
     }
 
     public void DestroyEntity(IEntity entity)
     {
-      if (entity == null)
-        throw new ArgumentNullException();
-
-      DestroyEntity(entity.Id);
+      entityManager.DestroyEntity(entity);
     }
 
-    public void DestroyEntity(int index)
+    public IComponent CreateComponent<ComponentType>(ComponentType value, IEntity entity, bool isInstanced)
     {
-      if (index < 0 || index >= entities.Count)
-      {
-        throw new ArgumentOutOfRangeException();
-      }
-      Entity entity = (Entity)entities[index];
-      entity.Destroy();
-      entity.ComponentRemoved -= EntityComponentRemoved;
-      cacheManager.AddItemToCache(entity);
-      entities[index] = null;
+      IComponent result = (isInstanced) ? factory.CreateInstanced(value) : factory.Create(value);
+      ((Entity)entity).AddComponent(result);
+      return result;
     }
 
-    public void RegisterSystem<T>(ISystem system)
-      where T : ITuple
+    public void DestroyComponent(IComponent component, IEntity entity)
     {
-      CheckNull(system);
-
-      if (!systems.Contains(system))
-      {
-        systems.Add(system);
-      }
-      else
-      {
-        throw new ArgumentException("The provided system is already registered in the context.");
-      }
+      ((Entity)entity).RemoveComponent(component);
     }
-
-    public void UnregisterSystem<T>(ISystem system)
-      where T : ITuple
+    public void DestroyAllComponent(IEntity entity)
     {
-      CheckNull(system);
-
-      if (!systems.Remove(system))
-      {
-        throw new ArgumentException("The provided system wasn't registered in the context.");
-      }
+      ((Entity)entity).RemoveAllComponents();
     }
 
+
+    public void RegisterSystem(ISystem system)
+    {
+      EcsSystem sys = (EcsSystem)system;
+      sys.EntityManager = entityManager;
+      executor.RegisterSystem(system);
+    }
+
+    public void UnregisterSystem(ISystem system)
+    {
+      executor.UnregisterSystem(system);
+    }
+    public void UnregisterAllSystems()
+    {
+      executor.UnregisterAllSystems();
+    }
     public bool ContainsSystem<T>(ISystem system)
       where T : ITuple
     {
-      return systems.Contains(system);
+      return executor.ContainsSystem(system);
     }
 
-    private void EntityComponentRemoved(object sender, ComponentEventArgs e)
-    {
-      cacheManager.AddItemToCache(e.Component);
-    }
-    private void EntityComponentRequested(object sender, ComponentRequestEventArgs e)
-    {
-      MethodInfo method = cacheManager.GetType().GetMethod(nameof(CacheManager.GetItemFromCache));
-      method = method.MakeGenericMethod(e.RequestedType);
-      e.SetComponent((IComponent)method.Invoke(cacheManager, Array.Empty<object>()));
-    }
-    private void CheckNull(ISystem system)
-    {
-      if (system == null)
-        throw new ArgumentNullException(nameof(system));
-    }
   }
 }

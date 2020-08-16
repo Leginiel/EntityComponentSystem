@@ -1,6 +1,7 @@
 ﻿using Autofac;
-using EntityComponentSystem.Caching;
-using EntityComponentSystem.Storages;
+using EntityComponentSystem.Components;
+using EntityComponentSystem.Entities;
+using EntityComponentSystem.Systems;
 using System.Diagnostics.CodeAnalysis;
 
 namespace EntityComponentSystem
@@ -13,14 +14,17 @@ namespace EntityComponentSystem
       builder.RegisterType<Context>()
              .As<IContext>()
              .SingleInstance();
-      builder.RegisterType<CacheManager>()
-             .As<ICacheManager>()
+      builder.RegisterType<EntityManager>()
+             .As<IEntityManager>()
              .SingleInstance();
-      builder.RegisterType<StorageManager>()
-             .As<IStorageManager>()
+      builder.RegisterType<EntityElementFactory>()
+             .As<IElementFactory<Entity>>()
              .SingleInstance();
-      builder.RegisterType<StorageFactory>()
-             .As<IStorageFactory>()
+      builder.RegisterType<ComponentElementFactory>()
+             .As<IComponentElementFactory>()
+             .SingleInstance();
+      builder.RegisterType<Executor>()
+             .As<IExecutor>()
              .SingleInstance();
     }
   }
